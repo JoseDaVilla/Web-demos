@@ -7,14 +7,13 @@
   "address": "Carrera 93A #78A-52",
   "whatsapp_e164": "573014649726",
   "whatsapp_display": "301 464 9726",
-  "instagram": "orallife_odontologiaintegral",
   "rating": "5,0",
   "reviews": 232,
   "reviews_asof": "octubre de 2026",
   "maps_url": "https://maps.google.com/?cid=5902038150381510422",
   "maps_embed_q": "Oral Life Odontología Integral, Cra. 93a #78a-52, Robledo, Medellín",
   "entrance_hint": "Busca el aviso azul de Oral Life sobre la puerta de vidrio.",
-  "intro": "Consultorio odontológico en Robledo Aures. Limpieza, ortodoncia, blanqueamiento, implantes y diseño de sonrisa en un mismo lugar.",
+  "intro": "Consultorio de odontología estética del Dr. Hernán Pérez en Robledo Aures. Diseño de sonrisa, ortodoncia, implantes y todo el cuidado de tus dientes en un solo lugar.",
   "hero": {
     "file": "oral-life-3.jpg",
     "position": "55% 50%",
@@ -23,7 +22,12 @@
   },
   "facade": {
     "file": "oral-life-2.jpg",
-    "crop": [0, 30, 1200, 1290],
+    "crop": [
+      0,
+      30,
+      1200,
+      1290
+    ],
     "position": "50% 12%",
     "alt": "Entrada de Oral Life: puerta de vidrio con un aviso azul que dice Consultorio Odontológico"
   },
@@ -32,37 +36,111 @@
       "title": "Prevención",
       "lead": "Para mantener dientes y encías sanos.",
       "items": [
-        {"name": "Limpieza dental ultrasónica", "text": "Retira el sarro y la placa con ultrasonido."},
-        {"name": "Odontología preventiva", "text": "Revisiones para detectar caries y problemas de encías a tiempo."}
+        {
+          "name": "Limpieza dental ultrasónica",
+          "text": "Retira el sarro y la placa con ultrasonido."
+        },
+        {
+          "name": "Odontología preventiva",
+          "text": "Revisiones para detectar caries y problemas de encías a tiempo."
+        }
       ]
     },
     {
       "title": "Estética",
       "lead": "Para cambiar el color o la forma de tu sonrisa.",
       "items": [
-        {"name": "Blanqueamiento", "text": "Aclara el tono de tus dientes."},
-        {"name": "Diseño de sonrisa", "text": "Mejora la forma, el color y la alineación de tus dientes."},
-        {"name": "Cambio de calzas negras por blancas", "text": "Reemplaza las amalgamas metálicas por resinas del color del diente."},
-        {"name": "Odontología estética", "text": "Tratamientos para mejorar la apariencia de tus dientes."}
+        {
+          "name": "Blanqueamiento",
+          "text": "Aclara el tono de tus dientes."
+        },
+        {
+          "name": "Diseño de sonrisa",
+          "text": "Mejora la forma, el color y la alineación de tus dientes."
+        },
+        {
+          "name": "Microdiseño",
+          "text": "Ajustes pequeños de forma en los dientes para afinar la sonrisa."
+        },
+        {
+          "name": "Cambio de calzas negras por blancas",
+          "text": "Reemplaza las amalgamas metálicas por resinas del color del diente."
+        },
+        {
+          "name": "Odontología estética",
+          "text": "Tratamientos para mejorar la apariencia de tus dientes."
+        }
       ]
     },
     {
       "title": "Rehabilitación",
       "lead": "Para recuperar dientes dañados o perdidos.",
       "items": [
-        {"name": "Coronas", "text": "Fundas que cubren y protegen un diente dañado o debilitado."},
-        {"name": "Implantes", "text": "Raíces artificiales que reemplazan dientes perdidos."},
-        {"name": "Prótesis total y removible", "text": "Reponen varios dientes o toda la dentadura."},
-        {"name": "Endodoncia", "text": "Tratamiento de conducto para salvar un diente con el nervio afectado."}
+        {
+          "name": "Coronas",
+          "text": "Fundas que cubren y protegen un diente dañado o debilitado."
+        },
+        {
+          "name": "Implantes",
+          "text": "Raíces artificiales que reemplazan dientes perdidos."
+        },
+        {
+          "name": "Prótesis total y removible",
+          "text": "Reponen varios dientes o toda la dentadura."
+        },
+        {
+          "name": "Endodoncia",
+          "text": "Tratamiento de conducto para salvar un diente con el nervio afectado."
+        }
       ]
     },
     {
       "title": "Ortodoncia y cirugía",
       "lead": "Para alinear tu mordida o retirar las cordales.",
       "items": [
-        {"name": "Ortodoncia especializada", "text": "Brackets y aparatos para alinear los dientes y corregir la mordida."},
-        {"name": "Cirugía de cordales", "text": "Extracción de las muelas del juicio cuando no tienen espacio o causan dolor."}
+        {
+          "name": "Ortodoncia especializada",
+          "text": "Brackets y aparatos para alinear los dientes y corregir la mordida."
+        },
+        {
+          "name": "Cirugía de cordales",
+          "text": "Extracción de las muelas del juicio cuando no tienen espacio o causan dolor."
+        }
       ]
     }
-  ]
+  ],
+  "template": "dental_smile",
+  "doctor": "Dr. Hernán Pérez",
+  "theme": {
+    "ink": "#0f3b34",
+    "accent": "#13897b",
+    "accent_light": "#2bb5a8",
+    "sky": "#e8f6f3",
+    "cloud": "#f4fbf9",
+    "line": "#cfe8e3",
+    "on_ink": "#bfe3dc"
+  },
+  "featured": {
+    "name": "Diseño de sonrisa",
+    "text": "Cambia la forma, el color y la alineación de tus dientes. Es el tratamiento que más muestra el consultorio en su Instagram. También hacen microdiseño, para ajustes más sutiles."
+  },
+  "review_topics": [
+    "el trabajo",
+    "el tratamiento",
+    "lo felices que quedan",
+    "salud bucal"
+  ],
+  "social": [
+    {
+      "network": "Instagram",
+      "handle": "orallife_odontologiaintegral",
+      "url": "https://www.instagram.com/orallife_odontologiaintegral/",
+      "note": "2.154 seguidores"
+    }
+  ],
+  "copy": {
+    "book_label": "Agendar cita",
+    "reviewers": "pacientes",
+    "sources": "La calificación, la dirección y las fotos vienen del perfil público del consultorio en Google; los servicios, de su volante y su Instagram; el WhatsApp, de su aviso y su Instagram."
+  }
 }
