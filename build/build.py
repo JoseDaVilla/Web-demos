@@ -55,6 +55,7 @@ facade = load_photo(SITE["facade"], (900, 1000))
 font_b64 = base64.b64encode(FONT.read_bytes()).decode()
 
 WA_ICON = ('<svg class="wa" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 1.8a8.2 8.2 0 1 1-4.2 15.3l-.3-.2-2.9.8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8Zm-3 3.9c-.2 0-.5 0-.7.3-.3.3-1 1-1 2.3 0 1.4 1 2.7 1.2 2.9.1.2 2 3.1 4.9 4.3 2.4 1 2.9.8 3.4.7.5 0 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.2-.3-.2-.6-.4l-1.9-.9c-.3-.1-.5-.2-.7.1l-.9 1.1c-.1.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.8-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5.3-.5v-.5L9.700 8c-.2-.3-.4-.3-.6-.3Z"/></svg>')
+PHONE_ICON = ('<svg class="wa" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1Z"/></svg>')
 STAR = '<svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="m10 1.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8L10 14.900l-5.2 2.700 1-5.800L1.600 7.700l5.800-.800Z"/></svg>'
 
 groups_html = []
@@ -73,6 +74,72 @@ for group in SITE["groups"]:
 book = e(wa(f"Hola, quiero agendar una cita en {SITE['name']}."))
 full_address = f"{SITE['address']}, {SITE['area']}, {SITE['city']}"
 
+# Colors: each site sets its own palette in "theme"; the defaults are the
+# original clinic palette, so older site files still build the same page.
+THEME = {
+    "ink": "#10294f",          # titles, primary buttons, dark band
+    "accent": "#08778f",       # links, tagline, hover
+    "accent_light": "#19a9c6", # focus ring
+    "sky": "#e2f1f6",          # closing band, map placeholder
+    "cloud": "#f5fafc",        # services background
+    "line": "#cfe0e8",         # dividers
+    "on_ink": "#c3d6e8",       # secondary text on the dark band
+    **SITE.get("theme", {}),
+}
+
+# Wording that changes by niche. Defaults keep the dental wording.
+COPY = {
+    "book_label": "Agendar cita",
+    "reviewers": "pacientes",
+    "directions_wa": "Hola, ¿me indican cómo llegar al consultorio?",
+    "services_lead": "Pregunta por el tratamiento que te interesa y te respondemos por WhatsApp.",
+    "cta_title": "Agenda tu cita por WhatsApp",
+    "cta_text": f"Escríbenos al {SITE['whatsapp_display']} y cuadramos el día y la hora.",
+    "sources": "Las fotos, la calificación y los datos de contacto vienen del perfil público del consultorio en Google.",
+    **SITE.get("copy", {}),
+}
+
+# Optional landline for a "Llamar" button (urgencies, 24-hour places).
+phone = SITE.get("phone_e164")
+tel = f"tel:+{phone}" if phone else ""
+call_btn = (f'<a class="btn btn-ghost" href="{tel}">{PHONE_ICON}Llamar al {e(SITE["phone_display"])}</a>'
+            if phone else "")
+
+badges_html = "".join(f"<li>{e(b)}</li>" for b in SITE.get("badges", []))
+badges_html = f'<ul class="badges">{badges_html}</ul>' if badges_html else ""
+
+urgent = SITE.get("urgent")
+urgent_html = ""
+if urgent:
+    urgent_html = f"""
+  <section class="urgent" aria-labelledby="urgent-title">
+    <div class="wrap">
+      <div>
+        <h2 id="urgent-title">{e(urgent['title'])}</h2>
+        <p>{e(urgent['text'])}</p>
+      </div>
+      <div class="actions">
+        {f'<a class="btn btn-light" href="{tel}">{PHONE_ICON}Llamar al {e(SITE["phone_display"])}</a>' if phone else ''}
+        <a class="btn btn-light" href="{e(wa(urgent.get('wa_text', 'Hola, tengo una urgencia con mi mascota.')))}" target="_blank" rel="noopener">{WA_ICON}Escribir por WhatsApp</a>
+      </div>
+    </div>
+  </section>"""
+
+tel_footer = f'<a href="{tel}">Teléfono {e(SITE["phone_display"])}</a><br>' if phone else ""
+mobile_call = (f'<a class="btn btn-ghost btn-call" href="{tel}" aria-label="Llamar al {e(SITE["phone_display"])}">{PHONE_ICON}</a>'
+               if phone else "")
+
+# Stars match the real rating (rounded to the nearest whole star), and the
+# review count uses Colombian thousands separators: 1.564, not 1564.
+rating_value = float(SITE["rating"].replace(",", "."))
+full_stars = int(rating_value + 0.5)
+stars_html = STAR * full_stars + STAR.replace("<svg ", '<svg class="off" ', 1) * (5 - full_stars)
+stars_label = f"{SITE['rating']} de 5 estrellas"
+reviews_n = f"{SITE['reviews']:,}".replace(",", ".")
+
+caption = SITE["hero"].get("caption")
+caption_html = f"<figcaption>{e(caption)}</figcaption>" if caption else ""
+
 PAGE = f"""<!doctype html>
 <html lang="es-CO">
 <head>
@@ -89,14 +156,14 @@ PAGE = f"""<!doctype html>
   font-display: swap;
 }}
 :root {{
-  --tinta: #10294f;
-  --turquesa: #08778f;
-  --turquesa-claro: #19a9c6;
-  --cielo: #e2f1f6;
-  --nube: #f5fafc;
+  --tinta: {THEME['ink']};
+  --turquesa: {THEME['accent']};
+  --turquesa-claro: {THEME['accent_light']};
+  --cielo: {THEME['sky']};
+  --nube: {THEME['cloud']};
   --texto: #1c2c3c;
   --gris: #556779;
-  --linea: #cfe0e8;
+  --linea: {THEME['line']};
   --ambar: #f0ab1c;
   --ancho: 1180px;
 }}
@@ -166,6 +233,7 @@ ul {{ padding: 0; list-style: none; }}
 .rating {{ display: flex; align-items: center; gap: .6rem; margin-top: 1.6rem; font-size: .9375rem; color: var(--gris); text-decoration: none; }}
 .rating:hover span {{ text-decoration: underline; text-underline-offset: .25em; }}
 .stars {{ display: inline-flex; gap: 1px; color: var(--ambar); }}
+.stars .off {{ opacity: .3; }}
 .stars svg {{ width: 1.05rem; height: 1.05rem; }}
 .hero figure {{ margin: 0; }}
 .hero img {{
@@ -201,7 +269,7 @@ ul {{ padding: 0; list-style: none; }}
 .reviews .wrap {{ display: grid; gap: 1.75rem; align-items: center; }}
 .reviews .stars svg {{ width: 1.6rem; height: 1.6rem; }}
 .reviews h2 {{ margin-top: .9rem; font-size: clamp(2rem, 5.5vw, 3.25rem); font-weight: 720; line-height: 1.05; letter-spacing: -.03em; }}
-.reviews p {{ margin-top: .8rem; color: #c3d6e8; max-width: 44ch; }}
+.reviews p {{ margin-top: .8rem; color: {THEME['on_ink']}; max-width: 44ch; }}
 
 /* Ubicación */
 .location {{ padding-block: 4.5rem; }}
@@ -229,6 +297,21 @@ footer .wrap {{ display: grid; gap: 1.5rem; }}
 footer a {{ color: var(--tinta); font-weight: 600; text-underline-offset: .25em; }}
 footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding-top: 1.25rem; }}
 
+/* Distintivos */
+.badges {{ display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.4rem; }}
+.badges li {{
+  font-size: .875rem; font-weight: 650; color: var(--tinta);
+  background: var(--cielo); border: 1px solid var(--linea);
+  padding: .35rem .8rem; border-radius: 999px;
+}}
+
+/* Urgencias */
+.urgent {{ background: var(--turquesa); color: #fff; padding-block: 3rem; }}
+.urgent .wrap {{ display: grid; gap: 1.5rem; align-items: center; }}
+.urgent h2 {{ font-size: clamp(1.75rem, 4.5vw, 2.5rem); font-weight: 720; line-height: 1.05; letter-spacing: -.03em; }}
+.urgent p {{ margin-top: .6rem; max-width: 46ch; opacity: .92; }}
+.urgent .actions {{ display: flex; flex-wrap: wrap; gap: .8rem; }}
+
 /* Barra fija en celular */
 .mobile-cta {{
   position: fixed; inset: auto 0 0 0; z-index: 20;
@@ -236,7 +319,10 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
   background: rgba(255, 255, 255, .94); backdrop-filter: blur(8px);
   border-top: 1px solid var(--linea);
 }}
-.mobile-cta .btn {{ width: 100%; }}
+.mobile-cta {{ display: flex; gap: .6rem; }}
+.mobile-cta .btn {{ flex: 1; }}
+.mobile-cta .btn-call {{ flex: none; width: 3.25rem; padding: 0; }}
+.mobile-cta .btn-call .wa {{ width: 1.4rem; height: 1.4rem; }}
 .mobile-cta[hidden] {{ display: none; }}
 .only-desktop {{ display: none; }}
 
@@ -250,6 +336,7 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
   .services, .location, .cta {{ padding-block: 6.5rem; }}
   .group {{ grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 3rem; padding-block: 2.5rem; }}
   .reviews {{ padding-block: 5rem; }}
+  .urgent .wrap {{ grid-template-columns: 1fr auto; gap: 3rem; }}
   .reviews .wrap {{ grid-template-columns: 1fr auto; gap: 3rem; }}
   .location .wrap {{ grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 4rem; align-items: start; }}
   footer .wrap {{ grid-template-columns: 1.2fr 1fr 1fr; }}
@@ -271,7 +358,7 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
       <a href="#servicios">Servicios</a>
       <a href="#opiniones">Opiniones</a>
       <a href="#ubicacion">Ubicación</a>
-      <a class="btn btn-primary" href="{book}" target="_blank" rel="noopener">{WA_ICON}Agendar cita</a>
+      <a class="btn btn-primary" href="{book}" target="_blank" rel="noopener">{WA_ICON}{e(COPY['book_label'])}</a>
     </nav>
   </div>
 </header>
@@ -282,18 +369,19 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
       <div>
         <h1>{e(SITE['slogan'])}</h1>
         <p class="intro">{e(SITE['intro'])}</p>
+        {badges_html}
         <div class="actions">
-          <a class="btn btn-primary" href="{book}" target="_blank" rel="noopener">{WA_ICON}Agendar cita por WhatsApp</a>
-          <a class="btn btn-ghost" href="#servicios">Ver servicios</a>
+          <a class="btn btn-primary" href="{book}" target="_blank" rel="noopener">{WA_ICON}{e(COPY['book_label'])} por WhatsApp</a>
+          {call_btn or '<a class="btn btn-ghost" href="#servicios">Ver servicios</a>'}
         </div>
         <a class="rating" href="{e(SITE['maps_url'])}" target="_blank" rel="noopener">
-          <span class="stars" aria-hidden="true">{STAR * 5}</span>
-          <span>{e(SITE['rating'])} de 5 en Google, con {SITE['reviews']} reseñas</span>
+          <span class="stars" aria-hidden="true">{stars_html}</span>
+          <span>{e(SITE['rating'])} de 5 en Google, con {reviews_n} reseñas</span>
         </a>
       </div>
       <figure>
         <img src="{data_uri(hero, 80)}" width="{hero.width}" height="{hero.height}" alt="{e(SITE['hero']['alt'])}">
-        <figcaption>{e(SITE['hero']['caption'])}</figcaption>
+        {caption_html}
       </figure>
     </div>
   </section>
@@ -301,17 +389,18 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
   <section class="services" id="servicios">
     <div class="wrap">
       <h2 class="section-title">Servicios</h2>
-      <p class="section-lead">Pregunta por el tratamiento que te interesa y te respondemos por WhatsApp.</p>
+      <p class="section-lead">{e(COPY['services_lead'])}</p>
       <div class="groups">{''.join(groups_html)}</div>
     </div>
   </section>
+{urgent_html}
 
   <section class="reviews" id="opiniones">
     <div class="wrap">
       <div>
-        <span class="stars" role="img" aria-label="5 estrellas">{STAR * 5}</span>
+        <span class="stars" role="img" aria-label="{e(stars_label)}">{stars_html}</span>
         <h2>{e(SITE['rating'])} de 5 en Google</h2>
-        <p>Es el promedio de {SITE['reviews']} reseñas de pacientes, a {e(SITE['reviews_asof'])}.</p>
+        <p>Es el promedio de {reviews_n} reseñas de {e(COPY['reviewers'])}, a {e(SITE['reviews_asof'])}.</p>
       </div>
       <a class="btn btn-light" href="{e(SITE['maps_url'])}" target="_blank" rel="noopener">Leer las reseñas en Google</a>
     </div>
@@ -328,7 +417,7 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
         <p class="hint">{e(SITE['entrance_hint'])}</p>
         <div class="actions">
           <a class="btn btn-primary" href="{e(SITE['maps_url'])}" target="_blank" rel="noopener">Abrir en Google Maps</a>
-          <a class="btn btn-ghost" href="{e(wa('Hola, ¿me indican cómo llegar al consultorio?'))}" target="_blank" rel="noopener">Pedir indicaciones</a>
+          <a class="btn btn-ghost" href="{e(wa(COPY['directions_wa']))}" target="_blank" rel="noopener">Pedir indicaciones</a>
         </div>
         <div class="map">
           <span>{e(full_address)}</span>
@@ -341,8 +430,8 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
 
   <section class="cta">
     <div class="wrap">
-      <h2>Agenda tu cita por WhatsApp</h2>
-      <p>Escríbenos al {e(SITE['whatsapp_display'])} y cuadramos el día y la hora.</p>
+      <h2>{e(COPY['cta_title'])}</h2>
+      <p>{e(COPY['cta_text'])}</p>
       <a class="btn btn-primary" href="{book}" target="_blank" rel="noopener">{WA_ICON}Escribir al {e(SITE['whatsapp_display'])}</a>
     </div>
   </section>
@@ -354,13 +443,14 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
     <div>{e(SITE['address'])}<br>{e(SITE['area'])}, {e(SITE['city'])}</div>
     <div>
       <a href="{book}" target="_blank" rel="noopener">WhatsApp {e(SITE['whatsapp_display'])}</a><br>
+      {tel_footer}
       <a href="https://www.instagram.com/{e(SITE['instagram'])}/" target="_blank" rel="noopener">Instagram @{e(SITE['instagram'])}</a>
     </div>
-    <p class="note">Página de muestra creada como propuesta de diseño; no es el sitio oficial de {e(SITE['name'])}. Las fotos, la calificación y los datos de contacto vienen del perfil público del consultorio en Google.</p>
+    <p class="note">Página de muestra creada como propuesta de diseño; no es el sitio oficial de {e(SITE['name'])}. {e(COPY['sources'])}</p>
   </div>
 </footer>
 
-<div class="mobile-cta"><a class="btn btn-primary" href="{book}" target="_blank" rel="noopener">{WA_ICON}Agendar cita por WhatsApp</a></div>
+<div class="mobile-cta"><a class="btn btn-primary" href="{book}" target="_blank" rel="noopener">{WA_ICON}{e(COPY['book_label'])} por WhatsApp</a>{mobile_call}</div>
 <script>
 (function () {{
   var bar = document.querySelector('.mobile-cta');

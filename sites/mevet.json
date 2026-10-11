@@ -1,0 +1,84 @@
+{
+  "name": "MeVet",
+  "tagline": "Clínica de especialidades veterinarias",
+  "slogan": "Especialistas para tu mascota en Envigado",
+  "area": "Barrio Mesa",
+  "city": "Envigado",
+  "address": "Carrera 33 #39 Sur-37",
+  "whatsapp_e164": "573008033507",
+  "whatsapp_display": "300 803 3507",
+  "phone_e164": "576043228361",
+  "phone_display": "604 322 8361",
+  "instagram": "clinica_mevet",
+  "rating": "4,3",
+  "reviews": 1564,
+  "reviews_asof": "octubre de 2026",
+  "maps_url": "https://maps.google.com/?cid=12327057766086509175",
+  "maps_embed_q": "MeVet Clínica Veterinaria, Cra. 33 #39-37, Envigado, Antioquia",
+  "entrance_hint": "Busca el letrero blanco de MeVet sobre la vitrina que dice Clínica de Especialidades Veterinarias.",
+  "intro": "Clínica veterinaria en el barrio Mesa de Envigado. Consulta, especialistas, laboratorio, imágenes diagnósticas, cirugía y hospitalización en un mismo lugar.",
+  "badges": ["Atención 24 horas", "Especialistas", "Laboratorio e imágenes"],
+  "theme": {
+    "ink": "#1b2f6e",
+    "accent": "#2b63b8",
+    "accent_light": "#4f93e6",
+    "sky": "#e7eefa",
+    "cloud": "#f5f8fd",
+    "line": "#d3def0",
+    "on_ink": "#c9d6f2"
+  },
+  "copy": {
+    "book_label": "Pedir cita",
+    "reviewers": "clientes",
+    "directions_wa": "Hola, ¿me indican cómo llegar a la clínica?",
+    "services_lead": "Pregunta por el servicio que necesitas y te respondemos por WhatsApp.",
+    "cta_title": "Pide tu cita por WhatsApp",
+    "cta_text": "Escríbenos al 300 803 3507 y cuadramos el día y la hora.",
+    "sources": "La calificación, la dirección, el teléfono fijo y las fotos vienen del perfil público de la clínica en Google; el WhatsApp, el horario de 24 horas y los servicios, de su Instagram y su fachada."
+  },
+  "urgent": {
+    "title": "¿Tu mascota tiene una urgencia?",
+    "text": "Llámanos o escríbenos. Atendemos las 24 horas.",
+    "wa_text": "Hola, tengo una urgencia con mi mascota."
+  },
+  "hero": {
+    "file": "mevet-recepcion.jpg",
+    "crop": [0, 120, 1080, 1440],
+    "position": "50% 40%",
+    "alt": "Recepción de MeVet: mostrador blanco con la palabra Bienvenidos y el logo azul de MeVet en la pared"
+  },
+  "facade": {
+    "file": "mevet-fachada.jpg",
+    "crop": [0, 40, 406, 585],
+    "position": "50% 40%",
+    "alt": "Fachada de MeVet: letrero blanco sobre la vitrina que dice Clínica de Especialidades Veterinarias"
+  },
+  "groups": [
+    {
+      "title": "Consulta y diagnóstico",
+      "lead": "Para saber qué tiene tu mascota.",
+      "items": [
+        {"name": "Consulta general", "text": "Revisión de tu perro o gato cuando lo notas decaído o le toca control."},
+        {"name": "Consulta con especialistas", "text": "Atención de veterinarios especializados para casos que lo necesitan."},
+        {"name": "Laboratorio clínico", "text": "Exámenes de sangre y otras pruebas, en la misma clínica."},
+        {"name": "Imágenes diagnósticas", "text": "Estudios por imágenes para ver lo que no se nota por fuera."}
+      ]
+    },
+    {
+      "title": "Cirugía y hospitalización",
+      "lead": "Para cuando tu mascota necesita quedarse.",
+      "items": [
+        {"name": "Cirugía", "text": "Procedimientos quirúrgicos en la clínica."},
+        {"name": "Hospitalización", "text": "Cuidado y seguimiento mientras tu mascota se recupera."}
+      ]
+    },
+    {
+      "title": "Peluquería y tienda",
+      "lead": "Para el cuidado del día a día.",
+      "items": [
+        {"name": "Peluquería", "text": "Baño y corte, también para mascotas con problemas de piel."},
+        {"name": "Pet shop", "text": "Alimento y productos para tu mascota en la misma sede."}
+      ]
+    }
+  ]
+}
