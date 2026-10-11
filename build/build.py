@@ -137,6 +137,42 @@ stars_html = STAR * full_stars + STAR.replace("<svg ", '<svg class="off" ', 1) *
 stars_label = f"{SITE['rating']} de 5 estrellas"
 reviews_n = f"{SITE['reviews']:,}".replace(",", ".")
 
+def note_span(s):
+    return f"<span>{e(s['note'])}</span>" if s.get("note") else ""
+
+
+# Social profiles: a list of {network, handle, url, note}. The older
+# "instagram" key still works and becomes a one-item list.
+SOCIAL = SITE.get("social") or (
+    [{"network": "Instagram", "handle": SITE["instagram"],
+      "url": f"https://www.instagram.com/{SITE['instagram']}/"}] if SITE.get("instagram") else [])
+social_footer = "<br>".join(
+    f'<a href="{e(s["url"])}" target="_blank" rel="noopener">{e(s["network"])} @{e(s["handle"])}</a>' for s in SOCIAL)
+social_html = ""
+if SITE.get("social"):
+    cards = "".join(
+        f'<a class="social-card" href="{e(s["url"])}" target="_blank" rel="noopener">'
+        f'<span class="net">{e(s["network"])}</span><b>@{e(s["handle"])}</b>'
+        f'{note_span(s)}</a>'
+        for s in SOCIAL)
+    social_html = f"""
+  <section class="social">
+    <div class="wrap">
+      <div>
+        <h2 class="section-title">{e(COPY.get('social_title', 'Síguenos'))}</h2>
+        <p class="section-lead">{e(COPY.get('social_lead', 'Mira lo que publicamos día a día.'))}</p>
+      </div>
+      <div class="social-cards">{cards}</div>
+    </div>
+  </section>"""
+
+# Topics Google pulls out of the reviews ("hospitalización", "exámenes"...).
+topics = SITE.get("review_topics", [])
+topics_html = ""
+if topics:
+    chips = "".join(f"<li>{e(t)}</li>" for t in topics)
+    topics_html = f'<p class="topics-label">Lo que más mencionan en sus reseñas:</p><ul class="topics">{chips}</ul>'
+
 caption = SITE["hero"].get("caption")
 caption_html = f"<figcaption>{e(caption)}</figcaption>" if caption else ""
 
@@ -297,6 +333,25 @@ footer .wrap {{ display: grid; gap: 1.5rem; }}
 footer a {{ color: var(--tinta); font-weight: 600; text-underline-offset: .25em; }}
 footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding-top: 1.25rem; }}
 
+/* Temas de reseñas */
+.topics-label {{ margin-top: 1.4rem !important; font-size: .9375rem; }}
+.topics {{ display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }}
+.topics li {{ font-size: .875rem; font-weight: 600; padding: .3rem .8rem; border-radius: 999px; border: 1px solid rgba(255,255,255,.35); }}
+
+/* Redes */
+.social {{ padding-block: 4rem; border-top: 1px solid var(--linea); }}
+.social .wrap {{ display: grid; gap: 2rem; align-items: center; }}
+.social-cards {{ display: grid; gap: .8rem; }}
+.social-card {{
+  display: grid; gap: .15rem; text-decoration: none; padding: 1.1rem 1.4rem;
+  border: 2px solid var(--tinta); border-radius: 1.25rem; color: var(--tinta);
+  transition: background-color .15s, color .15s;
+}}
+.social-card:hover {{ background: var(--tinta); color: #fff; }}
+.social-card .net {{ font-size: .8125rem; font-weight: 650; text-transform: uppercase; letter-spacing: .06em; opacity: .75; }}
+.social-card b {{ font-size: 1.375rem; font-weight: 700; letter-spacing: -.01em; }}
+.social-card span:last-child:not(.net) {{ font-size: .9375rem; opacity: .8; }}
+
 /* Distintivos */
 .badges {{ display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.4rem; }}
 .badges li {{
@@ -336,6 +391,8 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
   .services, .location, .cta {{ padding-block: 6.5rem; }}
   .group {{ grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 3rem; padding-block: 2.5rem; }}
   .reviews {{ padding-block: 5rem; }}
+  .social .wrap {{ grid-template-columns: 1fr 1fr; gap: 4rem; }}
+  .social {{ padding-block: 5rem; }}
   .urgent .wrap {{ grid-template-columns: 1fr auto; gap: 3rem; }}
   .reviews .wrap {{ grid-template-columns: 1fr auto; gap: 3rem; }}
   .location .wrap {{ grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 4rem; align-items: start; }}
@@ -401,6 +458,7 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
         <span class="stars" role="img" aria-label="{e(stars_label)}">{stars_html}</span>
         <h2>{e(SITE['rating'])} de 5 en Google</h2>
         <p>Es el promedio de {reviews_n} reseñas de {e(COPY['reviewers'])}, a {e(SITE['reviews_asof'])}.</p>
+        {topics_html}
       </div>
       <a class="btn btn-light" href="{e(SITE['maps_url'])}" target="_blank" rel="noopener">Leer las reseñas en Google</a>
     </div>
@@ -428,6 +486,7 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
     </div>
   </section>
 
+{social_html}
   <section class="cta">
     <div class="wrap">
       <h2>{e(COPY['cta_title'])}</h2>
@@ -444,7 +503,7 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
     <div>
       <a href="{book}" target="_blank" rel="noopener">WhatsApp {e(SITE['whatsapp_display'])}</a><br>
       {tel_footer}
-      <a href="https://www.instagram.com/{e(SITE['instagram'])}/" target="_blank" rel="noopener">Instagram @{e(SITE['instagram'])}</a>
+      {social_footer}
     </div>
     <p class="note">Página de muestra creada como propuesta de diseño; no es el sitio oficial de {e(SITE['name'])}. {e(COPY['sources'])}</p>
   </div>

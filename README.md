@@ -23,6 +23,18 @@ The photos directory holds the image files named in the site JSON (`hero.file`
 and `facade.file`). Source photos are not committed; the built page inlines the
 resized copies it needs.
 
+## Optional site fields
+
+All of these are optional; a site file without them builds the original clinic page.
+
+- `theme`: colors (`ink`, `accent`, `accent_light`, `sky`, `cloud`, `line`, `on_ink`). Take them from the business's Instagram or its facade.
+- `copy`: wording that changes by niche (`book_label`, `reviewers`, `directions_wa`, `services_lead`, `cta_title`, `cta_text`, `sources`, `social_title`, `social_lead`).
+- `badges`: short facts shown under the intro, e.g. "Abierto las 24 horas".
+- `phone_e164` / `phone_display`: adds "Llamar" buttons.
+- `urgent`: `{title, text, wa_text}` band for places that take emergencies.
+- `social`: list of `{network, handle, url, note}`; replaces the older `instagram` key.
+- `review_topics`: the topics Google shows above the reviews.
+
 ## Content rules
 
 - Use only facts from the business's public profile or its own material.
