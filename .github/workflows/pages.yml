@@ -31,7 +31,9 @@ jobs:
           cp index.html _site/ 2>/dev/null || true
           for d in */; do
             d="${d%/}"
-            [ -f "$d/index.html" ] && cp -r "$d" _site/
+            if [ "$d" != "_site" ] && [ -f "$d/index.html" ]; then
+              cp -r "$d" _site/
+            fi
           done
           touch _site/.nojekyll
           ls -R _site | head -50
