@@ -12,21 +12,16 @@ the visit section with a facade thumbnail next to the map.
 render(g) receives the build script's globals (SITE, COPY, THEME, helpers).
 """
 import base64
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from icons import icon  # noqa: E402
 
 FONT = Path(__file__).resolve().parent.parent / "fonts" / "figtree-latin-wght-normal.woff2"
 
-# Simple line icons for the service groups, in the order they appear.
-ICONS = [
-    # stethoscope
-    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3v5a4 4 0 0 0 8 0V3M10 12v2a5 5 0 0 0 10 0v-2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="20" cy="10" r="2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',
-    # test tube
-    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6M10 3v11.5a2 2 0 0 0 4 0V3M10 10h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M5 21h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
-    # medical cross in a square
-    '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
-    # paw
-    '<svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="7" cy="9" rx="1.8" ry="2.4" fill="currentColor"/><ellipse cx="11" cy="6.5" rx="1.8" ry="2.4" fill="currentColor"/><ellipse cx="15.5" cy="7.5" rx="1.8" ry="2.4" fill="currentColor"/><ellipse cx="18.5" cy="11.5" rx="1.6" ry="2.2" fill="currentColor"/><path d="M12.5 11.5c-2.6 0-5 3.2-5 5.6 0 1.6 1.2 2.4 2.6 2.4 1 0 1.6-.5 2.4-.5s1.4.5 2.4.5c1.4 0 2.6-.8 2.6-2.4 0-2.4-2.4-5.6-5-5.6Z" fill="currentColor"/></svg>',
-]
+# Lucide icons for the service groups, in the order they appear.
+ICON_NAMES = ["lucide/stethoscope", "lucide/microscope", "lucide/hospital", "lucide/paw-print"]
 
 
 def render(g):
@@ -41,7 +36,7 @@ def render(g):
         items = "".join(f'<li><b>{e(it["name"])}</b><span>{e(it["text"])}</span></li>' for it in group["items"])
         ask = wa(f"Hola, quiero información sobre {group['title'].lower()}.")
         groups.append(
-            f'<article class="card"><div class="icon">{ICONS[i % len(ICONS)]}</div>'
+            f'<article class="card"><div class="icon">{icon(ICON_NAMES[i % len(ICON_NAMES)])}</div>'
             f'<h3>{e(group["title"])}</h3><p class="card-lead">{e(group["lead"])}</p><ul>{items}</ul>'
             f'<a class="card-link" href="{e(ask)}" target="_blank" rel="noopener">Preguntar por WhatsApp</a></article>'
         )
@@ -55,7 +50,7 @@ def render(g):
   <section class="insta">
     <div class="wrap">
       <a class="insta-card" href="{e(insta['url'])}" target="_blank" rel="noopener">
-        <span class="insta-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/></svg></span>
+        <span class="insta-icon">{icon("brands/instagram")}</span>
         <span><b>@{e(insta['handle'])}</b><small>{e(insta.get('note', ''))} en {e(insta['network'])}. {e(C.get('social_lead', ''))}</small></span>
         <span class="insta-go">Ver perfil</span>
       </a>
@@ -204,6 +199,7 @@ h2 {{ font-size: clamp(1.9rem, 4vw, 2.6rem); line-height: 1.12; }}
 footer {{ background: var(--suave); padding-block: 2.5rem 7rem; font-size: .9375rem; color: var(--gris); }}
 footer .wrap {{ display: grid; gap: 1.2rem; }}
 footer a {{ color: var(--navy); font-weight: 600; text-underline-offset: .25em; }}
+footer .fi {{ width: 1rem; height: 1rem; vertical-align: -.15em; margin-right: .4rem; }}
 footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding-top: 1.2rem; }}
 
 .bar {{ position: fixed; inset: auto 0 0 0; z-index: 20; display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; padding: .6rem .8rem calc(.6rem + env(safe-area-inset-bottom)); background: rgba(255,255,255,.96); backdrop-filter: blur(8px); border-top: 1px solid var(--linea); }}
@@ -338,9 +334,9 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
     <div><a class="brand" href="#inicio"><b>{e(S['name'])}</b><span>{e(S['tagline'])}</span></a></div>
     <div>{e(S['address'])}<br>{e(S['area'])}, {e(S['city'])}<br>Abierto las 24 horas</div>
     <div>
-      <a href="{tel}">Teléfono {e(S['phone_display'])}</a><br>
-      <a href="{book}" target="_blank" rel="noopener">WhatsApp {e(S['whatsapp_display'])}</a><br>
-      {g['social_footer']}
+      <a href="{tel}">{icon("lucide/phone", "fi")}{e(S['phone_display'])}</a><br>
+      <a href="{book}" target="_blank" rel="noopener">{icon("brands/whatsapp", "fi")}{e(S['whatsapp_display'])}</a><br>
+      {"".join(f'<a href="{e(s["url"])}" target="_blank" rel="noopener">{icon("brands/" + s["network"].lower(), "fi")}@{e(s["handle"])}</a>' for s in g["SOCIAL"])}
     </div>
     <p class="note">Página de muestra creada como propuesta de diseño; no es el sitio oficial de {e(S['name'])}. {e(C['sources'])}</p>
   </div>

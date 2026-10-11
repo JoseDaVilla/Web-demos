@@ -13,7 +13,11 @@ list; and the entrance photo next to the directions.
 render(g) receives the build script's globals (SITE, COPY, THEME, helpers).
 """
 import base64
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from icons import icon  # noqa: E402
 
 FONTS = Path(__file__).resolve().parent.parent / "fonts"
 
@@ -62,7 +66,7 @@ def render(g):
         topics_txt = ", ".join(topics[:-1]) + (" y " if len(topics) > 1 else "") + topics[-1]
 
     insta = g["SOCIAL"][0] if g["SOCIAL"] else None
-    insta_line = (f'<a href="{e(insta["url"])}" target="_blank" rel="noopener">Instagram @{e(insta["handle"])}</a>'
+    insta_line = (f'<a href="{e(insta["url"])}" target="_blank" rel="noopener">{icon("brands/instagram", "fi")}@{e(insta["handle"])}</a>'
                   if insta else "")
     doctor = S.get("doctor")
 
@@ -184,6 +188,7 @@ footer .wrap {{ display: grid; gap: 1.2rem; }}
 footer a {{ color: #fff; text-underline-offset: .25em; }}
 footer .mark b {{ color: #fff; }}
 footer .mark span {{ color: {T['on_ink']}; }}
+footer .fi {{ width: 1rem; height: 1rem; vertical-align: -.15em; margin-right: .4rem; }}
 footer .note {{ font-size: .8125rem; border-top: 1px solid rgba(255,255,255,.18); padding-top: 1.2rem; }}
 
 .bar {{ position: fixed; inset: auto 0 0 0; z-index: 20; padding: .6rem .8rem calc(.6rem + env(safe-area-inset-bottom)); background: rgba(255,255,255,.96); backdrop-filter: blur(8px); border-top: 1px solid var(--linea); }}
@@ -291,7 +296,7 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid rgba(255,255,255,.18)
   <div class="wrap">
     <div><a class="mark" href="#inicio"><b>{e(S['name'])}</b><span>{e(S['tagline'])}</span></a></div>
     <div>{e(S['address'])}<br>{e(S['area'])}, {e(S['city'])}</div>
-    <div><a href="{book}" target="_blank" rel="noopener">WhatsApp {e(S['whatsapp_display'])}</a><br>{insta_line}</div>
+    <div><a href="{book}" target="_blank" rel="noopener">{icon("brands/whatsapp", "fi")}{e(S['whatsapp_display'])}</a><br>{insta_line}</div>
     <p class="note">Página de muestra creada como propuesta de diseño; no es el sitio oficial de {e(S['name'])}. {e(C['sources'])}</p>
   </div>
 </footer>

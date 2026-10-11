@@ -23,6 +23,9 @@ from urllib.parse import quote
 
 from PIL import Image
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from icons import icon  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 FONT = Path(__file__).resolve().parent / "fonts" / "bricolage-grotesque-latin-wght-normal.woff2"
 
@@ -54,8 +57,8 @@ hero = load_photo(SITE["hero"], (1200, 1200))
 facade = load_photo(SITE["facade"], (900, 1000))
 font_b64 = base64.b64encode(FONT.read_bytes()).decode()
 
-WA_ICON = ('<svg class="wa" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 1.8a8.2 8.2 0 1 1-4.2 15.3l-.3-.2-2.9.8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8Zm-3 3.9c-.2 0-.5 0-.7.3-.3.3-1 1-1 2.3 0 1.4 1 2.7 1.2 2.9.1.2 2 3.1 4.9 4.3 2.4 1 2.9.8 3.4.7.5 0 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.2-.3-.2-.6-.4l-1.9-.9c-.3-.1-.5-.2-.7.1l-.9 1.1c-.1.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.8-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5.3-.5v-.5L9.700 8c-.2-.3-.4-.3-.6-.3Z"/></svg>')
-PHONE_ICON = ('<svg class="wa" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1Z"/></svg>')
+WA_ICON = icon('brands/whatsapp', 'wa')
+PHONE_ICON = icon('lucide/phone', 'wa')
 STAR = '<svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="m10 1.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8L10 14.900l-5.2 2.700 1-5.800L1.600 7.700l5.800-.800Z"/></svg>'
 
 groups_html = []

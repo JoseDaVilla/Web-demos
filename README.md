@@ -7,6 +7,7 @@ HTML page, published with GitHub Pages at `/<slug>/`.
 
 ```
 build/build.py        Build script and the original clinic layout
+build/icons.py        Inline icons: Simple Icons (brands, CC0) and Lucide (ISC) in build/icons/
 build/templates/      One layout per demo (vet24.py for MeVet, dental_smile.py for Oral Life)
 build/fonts/          Bricolage Grotesque (SIL Open Font License)
 sites/<slug>.json     Content for one demo
