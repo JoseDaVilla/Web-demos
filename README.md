@@ -34,6 +34,7 @@ All of these are optional; a site file without them builds the original clinic p
 - `urgent`: `{title, text, wa_text}` band for places that take emergencies.
 - `social`: list of `{network, handle, url, note}`; replaces the older `instagram` key.
 - `review_topics`: the topics Google shows above the reviews.
+- `open_24h`: `true` swaps the headline for the live time in Colombia ("Son las 3:42 p. m. y estamos abiertos"). Only for places Google lists as open 24 hours.
 
 ## Content rules
 

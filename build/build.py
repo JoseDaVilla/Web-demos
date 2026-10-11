@@ -173,6 +173,18 @@ if topics:
     chips = "".join(f"<li>{e(t)}</li>" for t in topics)
     topics_html = f'<p class="topics-label">Lo que más mencionan en sus reseñas:</p><ul class="topics">{chips}</ul>'
 
+# 24-hour places: the headline shows the live time in Colombia ("Son las
+# 3:42 p. m. y estamos abiertos"). Without JavaScript it falls back to a
+# plain sentence, so the page never shows a wrong or empty time.
+if SITE.get("open_24h"):
+    hero_title = (
+        '<p class="status"><span class="dot" aria-hidden="true"></span>Abierto ahora</p>'
+        '<h1 class="clock-h"><span class="js-clock" hidden>Son las <time class="now"></time><br>y estamos abiertos.</span>'
+        '<span class="no-js">Abiertos a cualquier hora.</span></h1>'
+    )
+else:
+    hero_title = f"<h1>{e(SITE['slogan'])}</h1>"
+
 caption = SITE["hero"].get("caption")
 caption_html = f"<figcaption>{e(caption)}</figcaption>" if caption else ""
 
@@ -352,6 +364,17 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
 .social-card b {{ font-size: 1.375rem; font-weight: 700; letter-spacing: -.01em; }}
 .social-card span:last-child:not(.net) {{ font-size: .9375rem; opacity: .8; }}
 
+/* Abierto ahora */
+.status {{
+  display: inline-flex; align-items: center; gap: .55rem; margin-bottom: 1.1rem;
+  font-size: .9375rem; font-weight: 650; color: #13703f;
+  background: #e3f5ea; padding: .35rem .85rem .35rem .7rem; border-radius: 999px;
+}}
+.status .dot {{ width: .6rem; height: .6rem; border-radius: 50%; background: #1f9d55; box-shadow: 0 0 0 0 rgba(31,157,85,.5); animation: pulse 2.4s ease-out infinite; }}
+@keyframes pulse {{ 0% {{ box-shadow: 0 0 0 0 rgba(31,157,85,.45); }} 70%, 100% {{ box-shadow: 0 0 0 .55rem rgba(31,157,85,0); }} }}
+.hero h1.clock-h {{ font-size: clamp(2.5rem, 7.4vw, 4.6rem); line-height: 1; }}
+.clock-h .now {{ font-variant-numeric: tabular-nums; white-space: nowrap; }}
+
 /* Distintivos */
 .badges {{ display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.4rem; }}
 .badges li {{
@@ -402,6 +425,7 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
 @media (prefers-reduced-motion: reduce) {{
   html {{ scroll-behavior: auto; }}
   .btn {{ transition: none; }}
+  .status .dot {{ animation: none; }}
 }}
 </style>
 </head>
@@ -424,7 +448,7 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
   <section class="hero">
     <div class="wrap">
       <div>
-        <h1>{e(SITE['slogan'])}</h1>
+        {hero_title}
         <p class="intro">{e(SITE['intro'])}</p>
         {badges_html}
         <div class="actions">
@@ -511,6 +535,15 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
 
 <div class="mobile-cta"><a class="btn btn-primary" href="{book}" target="_blank" rel="noopener">{WA_ICON}{e(COPY['book_label'])} por WhatsApp</a>{mobile_call}</div>
 <script>
+(function () {{
+  var t = document.querySelector('.now');
+  if (!t) return;
+  var fmt = new Intl.DateTimeFormat('es-CO', {{ hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Bogota' }});
+  function tick() {{ t.textContent = fmt.format(new Date()).replace(/\u00a0/g, ' '); }}
+  tick(); setInterval(tick, 20000);
+  document.querySelector('.js-clock').hidden = false;
+  document.querySelector('.no-js').hidden = true;
+}})();
 (function () {{
   var bar = document.querySelector('.mobile-cta');
   var heroActions = document.querySelector('.hero .actions');

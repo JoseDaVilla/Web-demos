@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>MeVet: clínica de especialidades veterinarias en Barrio Mesa (demo)</title>
-<meta name="description" content="Clínica veterinaria en el barrio Mesa de Envigado. Consulta, especialistas, laboratorio, imágenes diagnósticas, cirugía y hospitalización en un mismo lugar.">
+<meta name="description" content="Clínica de especialidades veterinarias en el barrio Mesa de Envigado. Consulta, laboratorio, imágenes, cirugía y hospitalización en un mismo lugar, con acceso para silla de ruedas.">
 <style>
 @font-face {
   font-family: "Bricolage Grotesque";
@@ -17,8 +17,8 @@
   --tinta: #1b2f6e;
   --turquesa: #2b63b8;
   --turquesa-claro: #4f93e6;
-  --cielo: #e7eefa;
-  --nube: #f5f8fd;
+  --cielo: #e9edf4;
+  --nube: #f4f6fa;
   --texto: #1c2c3c;
   --gris: #556779;
   --linea: #d3def0;
@@ -174,6 +174,17 @@ footer .note { font-size: .8125rem; border-top: 1px solid var(--linea); padding-
 .social-card b { font-size: 1.375rem; font-weight: 700; letter-spacing: -.01em; }
 .social-card span:last-child:not(.net) { font-size: .9375rem; opacity: .8; }
 
+/* Abierto ahora */
+.status {
+  display: inline-flex; align-items: center; gap: .55rem; margin-bottom: 1.1rem;
+  font-size: .9375rem; font-weight: 650; color: #13703f;
+  background: #e3f5ea; padding: .35rem .85rem .35rem .7rem; border-radius: 999px;
+}
+.status .dot { width: .6rem; height: .6rem; border-radius: 50%; background: #1f9d55; box-shadow: 0 0 0 0 rgba(31,157,85,.5); animation: pulse 2.4s ease-out infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(31,157,85,.45); } 70%, 100% { box-shadow: 0 0 0 .55rem rgba(31,157,85,0); } }
+.hero h1.clock-h { font-size: clamp(2.5rem, 7.4vw, 4.6rem); line-height: 1; }
+.clock-h .now { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
 /* Distintivos */
 .badges { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.4rem; }
 .badges li {
@@ -224,6 +235,7 @@ footer .note { font-size: .8125rem; border-top: 1px solid var(--linea); padding-
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .btn { transition: none; }
+  .status .dot { animation: none; }
 }
 </style>
 </head>
@@ -246,9 +258,9 @@ footer .note { font-size: .8125rem; border-top: 1px solid var(--linea); padding-
   <section class="hero">
     <div class="wrap">
       <div>
-        <h1>Especialistas para tu mascota en Envigado</h1>
-        <p class="intro">Clínica veterinaria en el barrio Mesa de Envigado. Consulta, especialistas, laboratorio, imágenes diagnósticas, cirugía y hospitalización en un mismo lugar.</p>
-        <ul class="badges"><li>Abierto las 24 horas</li><li>Especialistas</li><li>Laboratorio e imágenes</li><li>Acceso para silla de ruedas</li></ul>
+        <p class="status"><span class="dot" aria-hidden="true"></span>Abierto ahora</p><h1 class="clock-h"><span class="js-clock" hidden>Son las <time class="now"></time><br>y estamos abiertos.</span><span class="no-js">Abiertos a cualquier hora.</span></h1>
+        <p class="intro">Clínica de especialidades veterinarias en el barrio Mesa de Envigado. Consulta, laboratorio, imágenes, cirugía y hospitalización en un mismo lugar, con acceso para silla de ruedas.</p>
+        
         <div class="actions">
           <a class="btn btn-primary" href="https://wa.me/573008033507?text=Hola%2C%20quiero%20agendar%20una%20cita%20en%20MeVet." target="_blank" rel="noopener"><svg class="wa" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 1.8a8.2 8.2 0 1 1-4.2 15.3l-.3-.2-2.9.8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8Zm-3 3.9c-.2 0-.5 0-.7.3-.3.3-1 1-1 2.3 0 1.4 1 2.7 1.2 2.9.1.2 2 3.1 4.9 4.3 2.4 1 2.9.8 3.4.7.5 0 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.2-.3-.2-.6-.4l-1.9-.9c-.3-.1-.5-.2-.7.1l-.9 1.1c-.1.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.8-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5.3-.5v-.5L9.700 8c-.2-.3-.4-.3-.6-.3Z"/></svg>Pedir cita por WhatsApp</a>
           <a class="btn btn-ghost" href="tel:+576043228361"><svg class="wa" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1Z"/></svg>Llamar al 604 322 8361</a>
@@ -354,6 +366,15 @@ footer .note { font-size: .8125rem; border-top: 1px solid var(--linea); padding-
 
 <div class="mobile-cta"><a class="btn btn-primary" href="https://wa.me/573008033507?text=Hola%2C%20quiero%20agendar%20una%20cita%20en%20MeVet." target="_blank" rel="noopener"><svg class="wa" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 1.8a8.2 8.2 0 1 1-4.2 15.3l-.3-.2-2.9.8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8Zm-3 3.9c-.2 0-.5 0-.7.3-.3.3-1 1-1 2.3 0 1.4 1 2.7 1.2 2.9.1.2 2 3.1 4.9 4.3 2.4 1 2.9.8 3.4.7.5 0 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.2-.3-.2-.6-.4l-1.9-.9c-.3-.1-.5-.2-.7.1l-.9 1.1c-.1.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.8-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5.3-.5v-.5L9.700 8c-.2-.3-.4-.3-.6-.3Z"/></svg>Pedir cita por WhatsApp</a><a class="btn btn-ghost btn-call" href="tel:+576043228361" aria-label="Llamar al 604 322 8361"><svg class="wa" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1Z"/></svg></a></div>
 <script>
+(function () {
+  var t = document.querySelector('.now');
+  if (!t) return;
+  var fmt = new Intl.DateTimeFormat('es-CO', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Bogota' });
+  function tick() { t.textContent = fmt.format(new Date()).replace(/ /g, ' '); }
+  tick(); setInterval(tick, 20000);
+  document.querySelector('.js-clock').hidden = false;
+  document.querySelector('.no-js').hidden = true;
+})();
 (function () {
   var bar = document.querySelector('.mobile-cta');
   var heroActions = document.querySelector('.hero .actions');

@@ -15,19 +15,13 @@
   "maps_url": "https://maps.google.com/?cid=12327057766086509175",
   "maps_embed_q": "MeVet Clínica Veterinaria, Cra. 33 #39-37, Envigado, Antioquia",
   "entrance_hint": "Busca el letrero blanco de MeVet sobre la vitrina que dice Clínica de Especialidades Veterinarias.",
-  "intro": "Clínica veterinaria en el barrio Mesa de Envigado. Consulta, especialistas, laboratorio, imágenes diagnósticas, cirugía y hospitalización en un mismo lugar.",
-  "badges": [
-    "Abierto las 24 horas",
-    "Especialistas",
-    "Laboratorio e imágenes",
-    "Acceso para silla de ruedas"
-  ],
+  "intro": "Clínica de especialidades veterinarias en el barrio Mesa de Envigado. Consulta, laboratorio, imágenes, cirugía y hospitalización en un mismo lugar, con acceso para silla de ruedas.",
   "theme": {
     "ink": "#1b2f6e",
     "accent": "#2b63b8",
     "accent_light": "#4f93e6",
-    "sky": "#e7eefa",
-    "cloud": "#f5f8fd",
+    "sky": "#e9edf4",
+    "cloud": "#f4f6fa",
     "line": "#d3def0",
     "on_ink": "#c9d6f2"
   },
@@ -133,5 +127,6 @@
     "hospitalización",
     "exámenes",
     "citas"
-  ]
+  ],
+  "open_24h": true
 }
