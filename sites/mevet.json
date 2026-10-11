@@ -15,14 +15,14 @@
   "maps_url": "https://maps.google.com/?cid=12327057766086509175",
   "maps_embed_q": "MeVet Clínica Veterinaria, Cra. 33 #39-37, Envigado, Antioquia",
   "entrance_hint": "Busca el letrero blanco de MeVet sobre la vitrina que dice Clínica de Especialidades Veterinarias.",
-  "intro": "Clínica de especialidades veterinarias en el barrio Mesa de Envigado. Consulta, laboratorio, imágenes, cirugía y hospitalización en un mismo lugar, con acceso para silla de ruedas.",
+  "intro": "Consulta, especialistas, laboratorio, imágenes, cirugía y hospitalización en un mismo lugar del barrio Mesa, con acceso para silla de ruedas.",
   "theme": {
     "ink": "#13235a",
     "accent": "#2a64c5",
     "accent_light": "#6ea1ef",
-    "sky": "#e8ecf3",
-    "cloud": "#f4f6fa",
-    "line": "#d5dcea",
+    "sky": "#eef2f8",
+    "cloud": "#f6f8fb",
+    "line": "#dde3ee",
     "on_ink": "#cfdaf5"
   },
   "copy": {
@@ -38,7 +38,7 @@
   },
   "urgent": {
     "title": "¿Tu mascota tiene una urgencia?",
-    "text": "Llámanos o escríbenos. Atendemos las 24 horas.",
+    "text": "Llámanos o escríbenos a cualquier hora, de día o de noche.",
     "wa_text": "Hola, tengo una urgencia con mi mascota."
   },
   "hero": {
@@ -65,8 +65,8 @@
   },
   "groups": [
     {
-      "title": "Consulta y diagnóstico",
-      "lead": "Para saber qué tiene tu mascota.",
+      "title": "Consulta",
+      "lead": "Consulta general y con especialistas.",
       "items": [
         {
           "name": "Consulta general",
@@ -75,7 +75,13 @@
         {
           "name": "Consulta con especialistas",
           "text": "Atención de veterinarios especializados para casos que lo necesitan."
-        },
+        }
+      ]
+    },
+    {
+      "title": "Laboratorio e imágenes",
+      "lead": "Exámenes en la misma clínica.",
+      "items": [
         {
           "name": "Laboratorio clínico",
           "text": "Exámenes de sangre y otras pruebas, en la misma clínica."

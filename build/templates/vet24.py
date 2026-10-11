@@ -1,60 +1,68 @@
 """Layout for 24-hour veterinary clinics ("vet24").
 
-Design idea: the visitor arrives with one of two questions, "is this an
-emergency?" or "I want an appointment". The hero answers both at once: the
-live time in Colombia says the clinic is open right now, and two large panels
-split the paths (call for an emergency, WhatsApp for an appointment). The
-services read like the clinic's own storefront window, in wide type.
+Tone: calm, clean and trustworthy, like a good clinic's reception. Light
+backgrounds, one friendly typeface (Figtree), the clinic's blue for actions
+and navy for text. The live time is a small detail in the status pill, not
+the headline. Urgent care gets its own contained card, not a full-width slab.
 
-Typeface: Archivo (variable width), expanded for headings, normal for text.
-It does not share structure or type with the clinic template.
+Differs from the clinic layout in type (Figtree vs Bricolage), hero
+composition, grouped service cards with one action each, the score card and
+the visit section with a facade thumbnail next to the map.
 
 render(g) receives the build script's globals (SITE, COPY, THEME, helpers).
 """
 import base64
 from pathlib import Path
 
-FONT = Path(__file__).resolve().parent.parent / "fonts" / "archivo-latin-standard-normal.woff2"
+FONT = Path(__file__).resolve().parent.parent / "fonts" / "figtree-latin-wght-normal.woff2"
+
+# Simple line icons for the service groups, in the order they appear.
+ICONS = [
+    # stethoscope
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3v5a4 4 0 0 0 8 0V3M10 12v2a5 5 0 0 0 10 0v-2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="20" cy="10" r="2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',
+    # test tube
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6M10 3v11.5a2 2 0 0 0 4 0V3M10 10h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M5 21h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    # medical cross in a square
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    # paw
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="7" cy="9" rx="1.8" ry="2.4" fill="currentColor"/><ellipse cx="11" cy="6.5" rx="1.8" ry="2.4" fill="currentColor"/><ellipse cx="15.5" cy="7.5" rx="1.8" ry="2.4" fill="currentColor"/><ellipse cx="18.5" cy="11.5" rx="1.6" ry="2.2" fill="currentColor"/><path d="M12.5 11.5c-2.6 0-5 3.2-5 5.6 0 1.6 1.2 2.4 2.6 2.4 1 0 1.6-.5 2.4-.5s1.4.5 2.4.5c1.4 0 2.6-.8 2.6-2.4 0-2.4-2.4-5.6-5-5.6Z" fill="currentColor"/></svg>',
+]
 
 
 def render(g):
     S, C, T, e, wa = g["SITE"], g["COPY"], g["THEME"], g["e"], g["wa"]
     hero, facade, data_uri = g["hero"], g["facade"], g["data_uri"]
-    WA, PH, STAR = g["WA_ICON"], g["PHONE_ICON"], g["STAR"]
+    WA, PH = g["WA_ICON"], g["PHONE_ICON"]
     tel, book = g["tel"], g["book"]
     font = base64.b64encode(FONT.read_bytes()).decode()
-    topics = S.get("review_topics", [])
 
-    # Services as storefront-window tiles. A service whose name matches one
-    # of Google's review topics is marked, because that is what people
-    # actually write about this clinic.
-    def mentioned(name):
-        n = name.lower()
-        return any(t[:6] in n or n[:6] in t for t in topics)
+    groups = []
+    for i, group in enumerate(S["groups"]):
+        items = "".join(f'<li><b>{e(it["name"])}</b><span>{e(it["text"])}</span></li>' for it in group["items"])
+        ask = wa(f"Hola, quiero información sobre {group['title'].lower()}.")
+        groups.append(
+            f'<article class="card"><div class="icon">{ICONS[i % len(ICONS)]}</div>'
+            f'<h3>{e(group["title"])}</h3><p class="card-lead">{e(group["lead"])}</p><ul>{items}</ul>'
+            f'<a class="card-link" href="{e(ask)}" target="_blank" rel="noopener">Preguntar por WhatsApp</a></article>'
+        )
+    groups_html = "".join(groups)
 
-    tiles = []
-    for group in S["groups"]:
-        for item in group["items"]:
-            tag = '<span class="tag">De lo más mencionado en sus reseñas</span>' if mentioned(item["name"]) else ""
-            tiles.append(
-                f'<li class="tile{" tile-hot" if tag else ""}">{tag}<h3>{e(item["name"])}</h3>'
-                f'<p>{e(item["text"])}</p>'
-                f'<a href="{e(wa("Hola, quiero información sobre " + item["name"].lower() + "."))}" target="_blank" rel="noopener">Preguntar por WhatsApp</a></li>'
-            )
-    tiles_html = "".join(tiles)
-
-    topics_html = "".join(f"<li>{e(t)}</li>" for t in topics)
-    social = g["SOCIAL"]
-    insta = social[0] if social else None
+    topics_html = "".join(f"<li>{e(t)}</li>" for t in S.get("review_topics", []))
+    insta = g["SOCIAL"][0] if g["SOCIAL"] else None
     insta_html = ""
     if insta:
         insta_html = f"""
-<section class="insta">
-  <div class="wrap">
-    <p><b>{e(insta.get('note', ''))}</b> siguen a {e(S['name'])} en {e(insta['network'])}. {e(C.get('social_lead', ''))}</p>
-    <a class="btn btn-line" href="{e(insta['url'])}" target="_blank" rel="noopener">Ver @{e(insta['handle'])}</a>
-  </div>
-</section>"""
+  <section class="insta">
+    <div class="wrap">
+      <a class="insta-card" href="{e(insta['url'])}" target="_blank" rel="noopener">
+        <span class="insta-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/></svg></span>
+        <span><b>@{e(insta['handle'])}</b><small>{e(insta.get('note', ''))} en {e(insta['network'])}. {e(C.get('social_lead', ''))}</small></span>
+        <span class="insta-go">Ver perfil</span>
+      </a>
+    </div>
+  </section>"""
+
+    urgent = S.get("urgent", {})
 
     return f"""<!doctype html>
 <html lang="es-CO">
@@ -62,156 +70,173 @@ def render(g):
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="{T['ink']}">
 <title>{e(S['name'])}: {e(S['tagline'].lower())} 24 horas en {e(S['city'])} (demo)</title>
 <meta name="description" content="{e(S['intro'])}">
 <style>
 @font-face {{
-  font-family: "Archivo";
+  font-family: "Figtree";
   src: url(data:font/woff2;base64,{font}) format("woff2");
-  font-weight: 100 900; font-stretch: 62% 125%; font-display: swap;
+  font-weight: 300 900; font-display: swap;
 }}
 :root {{
-  --noche: {T['ink']};
+  --navy: {T['ink']};
   --azul: {T['accent']};
-  --azul-claro: {T['accent_light']};
-  --pared: {T['sky']};
-  --blanco: #fff;
-  --texto: #18233f;
-  --gris: #54607a;
+  --azul-hover: #1f4f9e;
+  --suave: {T['sky']};
   --linea: {T['line']};
-  --verde: #1f9d55;
-  --ancho: 1240px;
+  --texto: #1d2742;
+  --gris: #5a6683;
+  --verde: #1f8a4c;
+  --verde-bg: #e4f4ea;
+  --radio: 1.25rem;
+  --ancho: 1160px;
 }}
 *, *::before, *::after {{ box-sizing: border-box; }}
 html {{ -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }}
-body {{ margin: 0; font-family: "Archivo", system-ui, sans-serif; font-stretch: 100%; font-size: 1.0625rem; line-height: 1.55; color: var(--texto); background: var(--blanco); }}
+body {{ margin: 0; font-family: "Figtree", system-ui, sans-serif; font-size: 1.0625rem; line-height: 1.6; color: var(--texto); background: #fff; }}
 h1, h2, h3, p, ul {{ margin: 0; }}
 ul {{ list-style: none; padding: 0; }}
 img {{ display: block; max-width: 100%; height: auto; }}
 a {{ color: inherit; }}
-:focus-visible {{ outline: 3px solid var(--azul-claro); outline-offset: 3px; border-radius: 4px; }}
+:focus-visible {{ outline: 3px solid var(--azul); outline-offset: 3px; border-radius: 6px; }}
 .wrap {{ width: min(100% - 2.5rem, var(--ancho)); margin-inline: auto; }}
-.wide {{ font-stretch: 125%; letter-spacing: -.02em; }}
+h1, h2 {{ color: var(--navy); font-weight: 750; letter-spacing: -.02em; text-wrap: balance; }}
+h2 {{ font-size: clamp(1.9rem, 4vw, 2.6rem); line-height: 1.12; }}
+.lead {{ margin-top: .7rem; color: var(--gris); max-width: 52ch; }}
 
 .demo-bar {{ background: #fff4cc; color: #4a3800; font-size: .875rem; text-align: center; padding: .5rem 1rem; border-bottom: 1px solid #ecd98a; }}
 
-.btn {{ display: inline-flex; align-items: center; justify-content: center; gap: .55rem; min-height: 3.1rem; padding: .7rem 1.4rem; border-radius: .6rem; font: inherit; font-weight: 650; text-decoration: none; border: 2px solid transparent; }}
-.btn svg {{ width: 1.3rem; height: 1.3rem; flex: none; }}
-.btn-line {{ border-color: var(--noche); color: var(--noche); }}
-.btn-line:hover {{ background: var(--noche); color: #fff; }}
+.btn {{ display: inline-flex; align-items: center; justify-content: center; gap: .55rem; min-height: 3.1rem; padding: .7rem 1.4rem; border-radius: 999px; font: inherit; font-weight: 650; text-decoration: none; border: 2px solid transparent; transition: background-color .15s, color .15s; }}
+.btn svg {{ width: 1.25rem; height: 1.25rem; flex: none; }}
+.btn-primary {{ background: var(--azul); color: #fff; }}
+.btn-primary:hover {{ background: var(--azul-hover); }}
+.btn-outline {{ border-color: var(--linea); color: var(--navy); background: #fff; }}
+.btn-outline:hover {{ border-color: var(--navy); }}
+.btn-white {{ background: #fff; color: var(--navy); }}
 
-/* Encabezado: el teléfono de urgencias siempre a la vista */
-.top {{ background: var(--noche); color: #fff; }}
-.top .wrap {{ display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 1rem; }}
-.logo {{ font-stretch: 125%; font-weight: 800; font-size: 1.5rem; letter-spacing: -.02em; text-decoration: none; }}
-.top-call {{ display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; font-weight: 650; font-size: .9375rem; }}
-.top-call svg {{ width: 1.1rem; height: 1.1rem; }}
-.top-call span {{ opacity: .75; font-weight: 500; }}
+/* Encabezado */
+.top {{ border-bottom: 1px solid var(--linea); background: #fff; }}
+.top .wrap {{ display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 4.5rem; }}
+.brand {{ text-decoration: none; line-height: 1.1; }}
+.brand b {{ display: block; font-size: 1.45rem; font-weight: 800; color: var(--navy); letter-spacing: -.02em; }}
+.brand span {{ font-size: .8125rem; color: var(--gris); }}
+.top nav {{ display: flex; align-items: center; gap: 1.6rem; }}
+.top nav a:not(.top-call) {{ display: none; text-decoration: none; font-weight: 550; color: var(--texto); }}
+.top nav a:not(.top-call):hover {{ color: var(--azul); }}
+.top-call {{ display: inline-flex; align-items: center; gap: .45rem; text-decoration: none; font-weight: 650; color: var(--navy); background: var(--suave); padding: .55rem 1rem; border-radius: 999px; font-size: .9375rem; white-space: nowrap; }}
+.top-call svg {{ width: 1rem; height: 1rem; color: var(--azul); }}
 
 /* Portada */
-.hero {{ background: var(--noche); color: #fff; padding-bottom: 3rem; overflow: hidden; }}
-.hero .wrap {{ display: grid; gap: 2.5rem; }}
-.hero .wrap {{ padding-top: 2.2rem; }}
-.status {{ display: inline-flex; align-items: center; gap: .55rem; font-weight: 650; font-size: .9375rem; color: #b9f0cf; }}
-.status .dot {{ width: .65rem; height: .65rem; border-radius: 50%; background: #3fd17f; animation: pulse 2.4s ease-out infinite; }}
-@keyframes pulse {{ 0% {{ box-shadow: 0 0 0 0 rgba(63,209,127,.55); }} 70%, 100% {{ box-shadow: 0 0 0 .6rem rgba(63,209,127,0); }} }}
-.clock {{ margin-top: 1.2rem; font-stretch: 125%; font-weight: 800; letter-spacing: -.035em; line-height: .92; }}
-.clock .time {{ display: block; font-size: clamp(3.4rem, 15vw, 7rem); font-variant-numeric: tabular-nums; white-space: nowrap; }}
-.clock .rest {{ display: block; margin-top: .4rem; font-size: clamp(1.6rem, 4.2vw, 2.6rem); font-weight: 700; color: #cfdaf5; }}
-.hero .intro {{ margin-top: 1.6rem; max-width: 46ch; color: #cfdaf5; }}
-.paths {{ display: grid; gap: .9rem; margin-top: 2rem; }}
-.path {{ display: grid; gap: .25rem; padding: 1.3rem 1.4rem; border-radius: 1rem; text-decoration: none; }}
-.path small {{ font-size: .9375rem; font-weight: 550; }}
-.path b {{ display: flex; align-items: center; gap: .6rem; font-stretch: 112%; font-size: 1.45rem; font-weight: 750; letter-spacing: -.01em; }}
-.path b svg {{ width: 1.5rem; height: 1.5rem; flex: none; }}
-.path-urgent {{ background: #fff; color: var(--noche); }}
-.path-urgent small {{ color: #b3261e; }}
-.path-book {{ background: var(--azul); color: #fff; }}
-.path-book small {{ color: #dbe6ff; }}
-.path:hover {{ outline: 3px solid var(--azul-claro); outline-offset: 2px; }}
-.hero figure {{ margin: 0; position: relative; }}
-.hero figure img {{ width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: {S['hero'].get('position', '50% 50%')}; border-radius: 1rem; }}
-.hero figure figcaption {{ margin-top: .7rem; font-size: .875rem; color: #9fb0d8; }}
-
-/* Vitrina de servicios */
-.window {{ padding-block: 4.5rem; background: var(--pared); }}
-.window h2, .rating h2, .visit h2 {{ font-stretch: 125%; font-weight: 800; letter-spacing: -.03em; line-height: 1; font-size: clamp(2rem, 5.5vw, 3.4rem); color: var(--noche); }}
-.window .lead {{ margin-top: .9rem; max-width: 52ch; color: var(--gris); }}
-.tiles {{ display: grid; gap: 1px; margin-top: 2.5rem; background: var(--linea); border: 1px solid var(--linea); border-radius: 1rem; overflow: hidden; }}
-.tile {{ background: #fff; padding: 1.5rem 1.4rem 1.4rem; display: flex; flex-direction: column; gap: .45rem; }}
-.tile h3 {{ font-stretch: 118%; font-weight: 750; font-size: 1.35rem; letter-spacing: -.015em; color: var(--noche); line-height: 1.1; }}
-.tile p {{ color: var(--gris); font-size: 1rem; flex: 1; }}
-.tile a {{ margin-top: .4rem; font-weight: 650; font-size: .9375rem; color: var(--azul); text-underline-offset: .3em; text-decoration-thickness: 2px; }}
-.tile .tag {{ align-self: flex-start; font-size: .8125rem; font-weight: 650; color: #13703f; background: #e3f5ea; padding: .2rem .6rem; border-radius: .4rem; }}
-.tile-hot {{ box-shadow: inset 0 4px 0 var(--verde); }}
-
-/* Calificación */
-.rating {{ padding-block: 4.5rem; }}
-.rating .wrap {{ display: grid; gap: 2rem; align-items: end; }}
-.score {{ font-stretch: 125%; font-weight: 800; font-size: clamp(5rem, 16vw, 9rem); line-height: .85; letter-spacing: -.05em; color: var(--noche); }}
-.score small {{ font-size: .32em; letter-spacing: -.01em; color: var(--gris); font-weight: 650; }}
-.stars {{ display: inline-flex; gap: 2px; color: #f0ab1c; margin-top: 1rem; }}
-.stars svg {{ width: 1.5rem; height: 1.5rem; }}
+.hero {{ padding-block: 2.5rem 3rem; }}
+.hero .wrap {{ display: grid; gap: 2.5rem; align-items: center; }}
+.status {{ display: inline-flex; align-items: center; gap: .55rem; font-size: .9375rem; font-weight: 600; color: var(--verde); background: var(--verde-bg); padding: .4rem .9rem .4rem .75rem; border-radius: 999px; }}
+.status .dot {{ width: .55rem; height: .55rem; border-radius: 50%; background: #2fbf6b; animation: pulse 2.4s ease-out infinite; }}
+.status time {{ font-variant-numeric: tabular-nums; }}
+@keyframes pulse {{ 0% {{ box-shadow: 0 0 0 0 rgba(47,191,107,.5); }} 70%, 100% {{ box-shadow: 0 0 0 .5rem rgba(47,191,107,0); }} }}
+.hero h1 {{ margin-top: 1.1rem; font-size: clamp(2.3rem, 5.4vw, 3.75rem); line-height: 1.06; }}
+.hero .intro {{ margin-top: 1.1rem; color: var(--gris); font-size: 1.125rem; max-width: 46ch; }}
+.hero .actions {{ display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.8rem; }}
+.trust {{ display: flex; align-items: center; gap: .6rem; margin-top: 1.5rem; font-size: .9375rem; color: var(--gris); text-decoration: none; }}
+.trust:hover span:last-child {{ text-decoration: underline; text-underline-offset: .25em; }}
+.stars {{ display: inline-flex; gap: 1px; color: #f2a516; }}
+.stars svg {{ width: 1.05rem; height: 1.05rem; }}
 .stars .off {{ opacity: .3; }}
-.rating p {{ margin-top: .7rem; color: var(--gris); max-width: 44ch; }}
-.topics {{ display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }}
-.topics li {{ font-weight: 600; font-size: .9375rem; padding: .35rem .85rem; border-radius: .5rem; background: var(--pared); color: var(--noche); }}
+.trust b {{ color: var(--navy); }}
+.photo {{ margin: 0; position: relative; }}
+.photo img {{ width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: {S['hero'].get('position', '50% 50%')}; border-radius: var(--radio); }}
+.photo figcaption {{ position: absolute; left: 1rem; bottom: 1rem; background: rgba(255,255,255,.94); color: var(--navy); font-size: .875rem; font-weight: 600; padding: .45rem .8rem; border-radius: .75rem; }}
+
+/* Urgencias */
+.urgent {{ padding-bottom: 1rem; }}
+.urgent-card {{ display: grid; gap: 1.2rem; align-items: center; background: var(--navy); color: #fff; border-radius: var(--radio); padding: 1.6rem 1.5rem; }}
+.urgent-card h2 {{ color: #fff; font-size: clamp(1.4rem, 3vw, 1.8rem); }}
+.urgent-card p {{ margin-top: .3rem; color: #c9d4ee; }}
+
+/* Servicios */
+.services {{ padding-block: 4.5rem; }}
+.cards {{ display: grid; gap: 1rem; margin-top: 2.2rem; }}
+.card {{ display: flex; flex-direction: column; background: #fff; border: 1px solid var(--linea); border-radius: var(--radio); padding: 1.6rem 1.5rem 1.4rem; }}
+.icon {{ width: 2.75rem; height: 2.75rem; border-radius: .9rem; background: var(--suave); color: var(--azul); display: grid; place-items: center; }}
+.icon svg {{ width: 1.5rem; height: 1.5rem; }}
+.card h3 {{ margin-top: 1rem; font-size: 1.3rem; font-weight: 700; color: var(--navy); letter-spacing: -.01em; }}
+.card-lead {{ margin-top: .2rem; color: var(--gris); font-size: .9375rem; }}
+.card ul {{ margin-top: 1.1rem; display: grid; gap: .85rem; flex: 1; align-content: start; }}
+.card li {{ display: grid; gap: .1rem; padding-top: .85rem; border-top: 1px solid var(--linea); }}
+.card li b {{ font-weight: 650; color: var(--texto); }}
+.card li span {{ color: var(--gris); font-size: .9375rem; line-height: 1.5; }}
+.card-link {{ margin-top: 1.3rem; font-weight: 650; color: var(--azul); text-decoration: none; }}
+.card-link:hover {{ text-decoration: underline; text-underline-offset: .25em; }}
+
+/* Opiniones */
+.reviews {{ background: var(--suave); padding-block: 4.5rem; }}
+.reviews .wrap {{ display: grid; gap: 2rem; align-items: center; }}
+.score {{ background: #fff; border-radius: var(--radio); padding: 1.8rem; display: grid; gap: .4rem; justify-items: start; }}
+.score .num {{ font-size: 4rem; font-weight: 800; line-height: 1; color: var(--navy); letter-spacing: -.03em; }}
+.score .num small {{ font-size: 1.25rem; color: var(--gris); font-weight: 600; letter-spacing: 0; }}
+.score .stars svg {{ width: 1.35rem; height: 1.35rem; }}
+.score p {{ color: var(--gris); font-size: .9375rem; }}
+.topics {{ display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.2rem; }}
+.topics li {{ background: #fff; color: var(--navy); font-weight: 600; font-size: .9375rem; padding: .4rem .9rem; border-radius: 999px; border: 1px solid var(--linea); }}
+.reviews .btn {{ margin-top: 1.6rem; }}
 
 /* Visita */
-.visit {{ padding-block: 4.5rem; background: var(--noche); color: #fff; }}
-.visit h2 {{ color: #fff; }}
-.visit .wrap {{ display: grid; gap: 2.5rem; }}
-.visit address {{ margin-top: 1.2rem; font-style: normal; font-stretch: 112%; font-size: 1.5rem; font-weight: 700; line-height: 1.25; }}
-.visit .hint {{ margin-top: .8rem; color: #cfdaf5; max-width: 42ch; }}
-.visit .actions {{ display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.6rem; }}
-.visit .btn-solid {{ background: #fff; color: var(--noche); }}
-.visit .btn-ghost {{ border-color: #fff; color: #fff; }}
-.visit .btn-ghost:hover {{ background: #fff; color: var(--noche); }}
-.visit figure {{ margin: 0; }}
-.visit figure img {{ width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: {S['facade'].get('position', '50% 50%')}; border-radius: 1rem; }}
-.map {{ margin-top: 1rem; border-radius: 1rem; overflow: hidden; aspect-ratio: 16 / 9; background: #23367a; position: relative; display: grid; place-items: center; }}
-.map span {{ color: #cfdaf5; font-size: .9375rem; padding: 1rem; text-align: center; }}
+.visit {{ padding-block: 4.5rem; }}
+.visit .wrap {{ display: grid; gap: 2rem; }}
+.visit address {{ margin-top: 1rem; font-style: normal; font-size: 1.3rem; font-weight: 650; color: var(--navy); line-height: 1.35; }}
+.entrance {{ display: flex; gap: 1rem; align-items: center; margin-top: 1.4rem; padding: .8rem; border: 1px solid var(--linea); border-radius: 1rem; }}
+.entrance img {{ width: 6.5rem; height: 6.5rem; object-fit: cover; object-position: {S['facade'].get('position', '50% 50%')}; border-radius: .7rem; flex: none; }}
+.entrance p {{ font-size: .9375rem; color: var(--gris); }}
+.visit .actions {{ display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.5rem; }}
+.map {{ border-radius: var(--radio); overflow: hidden; aspect-ratio: 4 / 3; background: var(--suave); position: relative; display: grid; place-items: center; border: 1px solid var(--linea); }}
+.map span {{ color: var(--gris); font-size: .9375rem; padding: 1rem; text-align: center; }}
 .map iframe {{ position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }}
 
-.insta {{ padding-block: 2.5rem; border-bottom: 1px solid var(--linea); }}
-.insta .wrap {{ display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.2rem; }}
-.insta p {{ max-width: 60ch; color: var(--gris); }}
-.insta b {{ color: var(--noche); font-stretch: 112%; }}
+/* Instagram */
+.insta {{ padding-bottom: 4rem; }}
+.insta-card {{ display: flex; align-items: center; gap: 1rem; padding: 1.2rem 1.4rem; border: 1px solid var(--linea); border-radius: var(--radio); text-decoration: none; }}
+.insta-card:hover {{ border-color: var(--navy); }}
+.insta-icon {{ width: 2.75rem; height: 2.75rem; flex: none; border-radius: .9rem; display: grid; place-items: center; background: var(--suave); color: var(--azul); }}
+.insta-icon svg {{ width: 1.5rem; height: 1.5rem; }}
+.insta-card b {{ display: block; color: var(--navy); font-size: 1.1rem; }}
+.insta-card small {{ display: block; color: var(--gris); font-size: .9375rem; }}
+.insta-go {{ margin-left: auto; font-weight: 650; color: var(--azul); white-space: nowrap; }}
 
-footer {{ padding-block: 2.5rem 7rem; font-size: .9375rem; color: var(--gris); }}
+footer {{ background: var(--suave); padding-block: 2.5rem 7rem; font-size: .9375rem; color: var(--gris); }}
 footer .wrap {{ display: grid; gap: 1.2rem; }}
-footer a {{ color: var(--noche); font-weight: 600; text-underline-offset: .25em; }}
+footer a {{ color: var(--navy); font-weight: 600; text-underline-offset: .25em; }}
 footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding-top: 1.2rem; }}
 
 .bar {{ position: fixed; inset: auto 0 0 0; z-index: 20; display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; padding: .6rem .8rem calc(.6rem + env(safe-area-inset-bottom)); background: rgba(255,255,255,.96); backdrop-filter: blur(8px); border-top: 1px solid var(--linea); }}
 .bar[hidden] {{ display: none; }}
-.bar a {{ min-height: 3rem; font-size: .9375rem; }}
-.bar .b-call {{ background: var(--noche); color: #fff; }}
-.bar .b-wa {{ background: var(--azul); color: #fff; }}
+.bar .btn {{ min-height: 3rem; font-size: .9375rem; }}
 
-@media (min-width: 900px) {{
+@media (max-width: 599px) {{
+  .hero .actions .btn {{ width: 100%; }}
+  .top-call span {{ display: none; }}
+  .insta-go {{ display: none; }}
+}}
+@media (min-width: 760px) {{
+  .cards {{ grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }}
+  .urgent-card {{ grid-template-columns: 1fr auto; padding: 1.8rem 2.2rem; }}
+  .reviews .wrap {{ grid-template-columns: 280px 1fr; gap: 3.5rem; }}
+}}
+@media (min-width: 960px) {{
   body {{ font-size: 1.125rem; }}
   .bar {{ display: none; }}
   footer {{ padding-bottom: 2.5rem; }}
-  .hero {{ padding-bottom: 4.5rem; }}
-  .hero .wrap {{ grid-template-columns: minmax(0, 1.4fr) minmax(0, .6fr); gap: 3.5rem; align-items: center; padding-top: 3.5rem; }}
-  .hero figure img {{ aspect-ratio: 3 / 4; }}
-  .paths {{ grid-template-columns: 1fr 1fr; }}
-  .tiles {{ grid-template-columns: repeat(4, 1fr); }}
-  .window, .rating, .visit {{ padding-block: 6rem; }}
-  .rating .wrap {{ grid-template-columns: auto 1fr; gap: 4rem; }}
-  .visit .wrap {{ grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4rem; align-items: start; }}
+  .top nav a:not(.top-call) {{ display: inline; }}
+  .hero {{ padding-block: 4rem 4.5rem; }}
+  .hero .wrap {{ grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 4rem; }}
+  .photo img {{ aspect-ratio: 5 / 6; }}
+  .services, .reviews, .visit {{ padding-block: 6rem; }}
+  .visit .wrap {{ grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 4rem; align-items: center; }}
   footer .wrap {{ grid-template-columns: 1.3fr 1fr 1fr; }}
   footer .note {{ grid-column: 1 / -1; }}
-}}
-@media (min-width: 600px) and (max-width: 899px) {{
-  .tiles {{ grid-template-columns: 1fr 1fr; }}
-  .paths {{ grid-template-columns: 1fr 1fr; }}
 }}
 @media (prefers-reduced-motion: reduce) {{
   html {{ scroll-behavior: auto; }}
   .status .dot {{ animation: none; }}
+  .btn {{ transition: none; }}
 }}
 </style>
 </head>
@@ -220,8 +245,13 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
 
 <header class="top">
   <div class="wrap">
-    <a class="logo" href="#inicio">{e(S['name'])}</a>
-    <a class="top-call" href="{tel}">{PH}<span>Urgencias</span> {e(S['phone_display'])}</a>
+    <a class="brand" href="#inicio"><b>{e(S['name'])}</b><span>{e(S['tagline'])}</span></a>
+    <nav aria-label="Principal">
+      <a href="#servicios">Servicios</a>
+      <a href="#opiniones">Opiniones</a>
+      <a href="#ubicacion">Ubicación</a>
+      <a class="top-call" href="{tel}">{PH}<span>Urgencias</span> {e(S['phone_display'])}</a>
+    </nav>
   </div>
 </header>
 
@@ -229,73 +259,84 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
   <section class="hero">
     <div class="wrap">
       <div>
-      <p class="status"><span class="dot" aria-hidden="true"></span>Abierto ahora en {e(S['city'])}</p>
-      <h1 class="clock">
-        <span class="js-clock" hidden><span class="time"><time class="now"></time></span><span class="rest">y {e(S['name'])} está abierto.</span></span>
-        <span class="no-js"><span class="time">24 horas</span><span class="rest">{e(S['name'])} no cierra.</span></span>
-      </h1>
+        <p class="status"><span class="dot" aria-hidden="true"></span><span class="js-clock" hidden>Abierto ahora, son las <time class="now"></time></span><span class="no-js">Abierto las 24 horas</span></p>
+        <h1>Especialistas veterinarios en {e(S['city'])}, abiertos las 24 horas</h1>
         <p class="intro">{e(S['intro'])}</p>
-        <div class="paths">
-          <a class="path path-urgent" href="{tel}"><small>¿Es una urgencia? Llama ya</small><b>{PH}{e(S['phone_display'])}</b></a>
-          <a class="path path-book" href="{book}" target="_blank" rel="noopener"><small>¿Quieres una cita? Escríbenos</small><b>{WA}{e(S['whatsapp_display'])}</b></a>
+        <div class="actions">
+          <a class="btn btn-primary" href="{book}" target="_blank" rel="noopener">{WA}{e(C['book_label'])} por WhatsApp</a>
+          <a class="btn btn-outline" href="{tel}">{PH}Llamar al {e(S['phone_display'])}</a>
         </div>
+        <a class="trust" href="{e(S['maps_url'])}" target="_blank" rel="noopener"><span class="stars" aria-hidden="true">{g['stars_html']}</span><span><b>{e(S['rating'])}</b> en Google con {g['reviews_n']} reseñas</span></a>
       </div>
-      <figure>
-        <img src="{data_uri(hero, 80)}" width="{hero.width}" height="{hero.height}" alt="{e(S['hero']['alt'])}">
-        <figcaption>La recepción de {e(S['name'])}, en {e(S['area'])}, {e(S['city'])}.</figcaption>
+      <figure class="photo">
+        <img src="{data_uri(hero, 82)}" width="{hero.width}" height="{hero.height}" alt="{e(S['hero']['alt'])}">
+        <figcaption>Recepción en {e(S['area'])}</figcaption>
       </figure>
     </div>
   </section>
 
-  <section class="window" id="servicios">
+  <section class="urgent" aria-labelledby="urgent-title">
     <div class="wrap">
-      <h2>Todo en la misma sede</h2>
-      <p class="lead">Lo mismo que anuncia la vitrina de la clínica. Pregunta por cualquier servicio y te responden por WhatsApp.</p>
-      <ul class="tiles">{tiles_html}</ul>
+      <div class="urgent-card">
+        <div>
+          <h2 id="urgent-title">{e(urgent.get('title', '¿Tu mascota tiene una urgencia?'))}</h2>
+          <p>{e(urgent.get('text', ''))}</p>
+        </div>
+        <a class="btn btn-white" href="{tel}">{PH}Llamar ahora</a>
+      </div>
     </div>
   </section>
 
-  <section class="rating" id="opiniones">
+  <section class="services" id="servicios">
     <div class="wrap">
-      <div>
-        <p class="score">{e(S['rating'])}<small> /5</small></p>
+      <h2>Servicios</h2>
+      <p class="lead">Todo en la misma sede, en {e(S['area'])}. {e(C['services_lead'])}</p>
+      <div class="cards">{groups_html}</div>
+    </div>
+  </section>
+
+  <section class="reviews" id="opiniones">
+    <div class="wrap">
+      <div class="score">
+        <span class="num">{e(S['rating'])}<small> de 5</small></span>
         <span class="stars" role="img" aria-label="{e(g['stars_label'])}">{g['stars_html']}</span>
+        <p>{g['reviews_n']} reseñas en Google, a {e(S['reviews_asof'])}</p>
       </div>
       <div>
-        <h2>{g['reviews_n']} reseñas en Google</h2>
-        <p>Es la calificación promedio que le dan sus {e(C['reviewers'])}, a {e(S['reviews_asof'])}. Lo que más mencionan:</p>
+        <h2>Lo que más mencionan sus {e(C['reviewers'])}</h2>
         <ul class="topics">{topics_html}</ul>
-        <p><a class="btn btn-line" href="{e(S['maps_url'])}" target="_blank" rel="noopener">Leer las reseñas en Google</a></p>
+        <a class="btn btn-outline" href="{e(S['maps_url'])}" target="_blank" rel="noopener">Leer las reseñas en Google</a>
       </div>
     </div>
   </section>
-{insta_html}
+
   <section class="visit" id="ubicacion">
     <div class="wrap">
       <div>
         <h2>Cómo llegar</h2>
         <address>{e(S['address'])}<br>{e(S['area'])}, {e(S['city'])}</address>
-        <p class="hint">{e(S['entrance_hint'])}</p>
+        <div class="entrance">
+          <img src="{data_uri(facade, 80)}" width="{facade.width}" height="{facade.height}" alt="{e(S['facade']['alt'])}">
+          <p>{e(S['entrance_hint'])}</p>
+        </div>
         <div class="actions">
-          <a class="btn btn-solid" href="{e(S['maps_url'])}" target="_blank" rel="noopener">Abrir en Google Maps</a>
-          <a class="btn btn-ghost" href="{e(wa(C['directions_wa']))}" target="_blank" rel="noopener">Pedir indicaciones</a>
+          <a class="btn btn-primary" href="{e(S['maps_url'])}" target="_blank" rel="noopener">Abrir en Google Maps</a>
+          <a class="btn btn-outline" href="{e(wa(C['directions_wa']))}" target="_blank" rel="noopener">Pedir indicaciones</a>
         </div>
       </div>
-      <div>
-        <figure><img src="{data_uri(facade, 80)}" width="{facade.width}" height="{facade.height}" loading="lazy" alt="{e(S['facade']['alt'])}"></figure>
-        <div class="map">
-          <span>{e(g['full_address'])}</span>
-          <iframe title="Mapa de {e(S['name'])}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q={g['quote'](S['maps_embed_q'])}&output=embed"></iframe>
-        </div>
+      <div class="map">
+        <span>{e(g['full_address'])}</span>
+        <iframe title="Mapa de {e(S['name'])}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q={g['quote'](S['maps_embed_q'])}&output=embed"></iframe>
       </div>
     </div>
   </section>
+{insta_html}
 </main>
 
 <footer>
   <div class="wrap">
-    <div><a class="logo" href="#inicio" style="color:var(--noche)">{e(S['name'])}</a><br>{e(S['tagline'])}</div>
-    <div>{e(S['address'])}<br>{e(S['area'])}, {e(S['city'])}</div>
+    <div><a class="brand" href="#inicio"><b>{e(S['name'])}</b><span>{e(S['tagline'])}</span></a></div>
+    <div>{e(S['address'])}<br>{e(S['area'])}, {e(S['city'])}<br>Abierto las 24 horas</div>
     <div>
       <a href="{tel}">Teléfono {e(S['phone_display'])}</a><br>
       <a href="{book}" target="_blank" rel="noopener">WhatsApp {e(S['whatsapp_display'])}</a><br>
@@ -306,15 +347,15 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
 </footer>
 
 <nav class="bar" aria-label="Contacto rápido">
-  <a class="btn b-call" href="{tel}">{PH}Llamar</a>
-  <a class="btn b-wa" href="{book}" target="_blank" rel="noopener">{WA}WhatsApp</a>
+  <a class="btn btn-outline" href="{tel}">{PH}Llamar</a>
+  <a class="btn btn-primary" href="{book}" target="_blank" rel="noopener">{WA}WhatsApp</a>
 </nav>
 
 <script>
 (function () {{
-  var bar = document.querySelector('.bar'), paths = document.querySelector('.paths');
-  if (!bar || !paths || !('IntersectionObserver' in window)) return;
-  new IntersectionObserver(function (en) {{ bar.hidden = en[0].isIntersecting; }}).observe(paths);
+  var bar = document.querySelector('.bar'), act = document.querySelector('.hero .actions');
+  if (!bar || !act || !('IntersectionObserver' in window)) return;
+  new IntersectionObserver(function (en) {{ bar.hidden = en[0].isIntersecting; }}).observe(act);
 }})();
 (function () {{
   var t = document.querySelector('.now');
