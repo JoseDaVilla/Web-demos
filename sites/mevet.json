@@ -17,13 +17,13 @@
   "entrance_hint": "Busca el letrero blanco de MeVet sobre la vitrina que dice Clínica de Especialidades Veterinarias.",
   "intro": "Clínica de especialidades veterinarias en el barrio Mesa de Envigado. Consulta, laboratorio, imágenes, cirugía y hospitalización en un mismo lugar, con acceso para silla de ruedas.",
   "theme": {
-    "ink": "#1b2f6e",
-    "accent": "#2b63b8",
-    "accent_light": "#4f93e6",
-    "sky": "#e9edf4",
+    "ink": "#13235a",
+    "accent": "#2a64c5",
+    "accent_light": "#6ea1ef",
+    "sky": "#e8ecf3",
     "cloud": "#f4f6fa",
-    "line": "#d3def0",
-    "on_ink": "#c9d6f2"
+    "line": "#d5dcea",
+    "on_ink": "#cfdaf5"
   },
   "copy": {
     "book_label": "Pedir cita",
@@ -128,5 +128,6 @@
     "exámenes",
     "citas"
   ],
-  "open_24h": true
+  "open_24h": true,
+  "template": "vet24"
 }

@@ -6,7 +6,8 @@ HTML page, published with GitHub Pages at `/<slug>/`.
 ## Layout
 
 ```
-build/build.py        Shared clinic template and build script
+build/build.py        Build script and the original clinic layout
+build/templates/      One layout per demo (e.g. vet24.py for MeVet)
 build/fonts/          Bricolage Grotesque (SIL Open Font License)
 sites/<slug>.json     Content for one demo
 <slug>/index.html     Built page (committed, this is what Pages serves)
@@ -22,6 +23,14 @@ python3 build/build.py sites/oral-life.json /path/to/photos
 The photos directory holds the image files named in the site JSON (`hero.file`
 and `facade.file`). Source photos are not committed; the built page inlines the
 resized copies it needs.
+
+## Every demo gets its own layout
+
+Two demos must not look like the same page with different colors. A site picks
+its layout with `"template": "<name>"` (a file in `build/templates/`); each new
+demo gets a new layout built around what is specific to that business (its
+hours, its storefront, its photos). Without `template` the original clinic
+layout is used.
 
 ## Optional site fields
 

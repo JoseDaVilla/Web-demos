@@ -558,6 +558,16 @@ footer .note {{ font-size: .8125rem; border-top: 1px solid var(--linea); padding
 </html>
 """
 
+# A site can pick its own layout from build/templates/<name>.py; without
+# "template" it uses the clinic layout above.
+if SITE.get("template"):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        SITE["template"], Path(__file__).resolve().parent / "templates" / f"{SITE['template']}.py")
+    layout = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(layout)
+    PAGE = layout.render(globals())
+
 out = ROOT / slug / "index.html"
 out.parent.mkdir(exist_ok=True)
 out.write_text(PAGE, encoding="utf-8")
